@@ -48,6 +48,8 @@ import 'package:woocommerce/models/customer_download.dart';
 import 'package:woocommerce/models/payment_gateway.dart';
 import 'package:woocommerce/models/shipping_zone_method.dart';
 import 'models/cart_item.dart';
+import 'models/jwt_response.dart';
+import 'models/jwt_response.dart';
 import 'woocommerce_error.dart';
 import 'models/cart.dart';
 import 'models/coupon.dart';
@@ -180,11 +182,11 @@ class WooCommerce {
         });
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      WooJWTResponse authResponse =
-          WooJWTResponse.fromJson(json.decode(response.body));
-      _authToken = authResponse.token;
+      WooJwtResponse authResponse =
+          WooJwtResponse.fromJson(json.decode(response.body));
+      _authToken = authResponse.data.token;
       _localDbService.updateSecurityToken(_authToken);
-      _urlHeader['Authorization'] = 'Bearer ${authResponse.token}';
+      _urlHeader['Authorization'] = 'Bearer ${authResponse.data.token}';
       return _authToken;
     } else {
       throw new WooCommerceError.fromJson(json.decode(response.body));

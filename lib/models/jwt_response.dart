@@ -31,29 +31,84 @@
 
  */
 
-class WooJWTResponse {
+import 'dart:convert';
+
+WooJwtResponse wooJwtResponseFromJson(String str) =>
+    WooJwtResponse.fromJson(json.decode(str));
+
+String wooJwtResponseToJson(WooJwtResponse data) => json.encode(data.toJson());
+
+class WooJwtResponse {
+  WooJwtResponse({
+    this.success,
+    this.statusCode,
+    this.code,
+    this.message,
+    this.data,
+  });
+
+  bool success;
+  int statusCode;
+  String code;
+  String message;
+  Data data;
+
+  factory WooJwtResponse.fromJson(Map<String, dynamic> json) => WooJwtResponse(
+        success: json["success"],
+        statusCode: json["statusCode"],
+        code: json["code"],
+        message: json["message"],
+        data: Data.fromJson(json["data"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "success": success,
+        "statusCode": statusCode,
+        "code": code,
+        "message": message,
+        "data": data.toJson(),
+      };
+
+  @override
+  toString() => this.toJson().toString();
+}
+
+class Data {
+  Data({
+    this.token,
+    this.id,
+    this.email,
+    this.nicename,
+    this.firstName,
+    this.lastName,
+    this.displayName,
+  });
+
   String token;
-  String userEmail;
-  String userNicename;
-  String userDisplayName;
+  int id;
+  String email;
+  String nicename;
+  String firstName;
+  String lastName;
+  String displayName;
 
-  WooJWTResponse(
-      {this.token, this.userEmail, this.userNicename, this.userDisplayName});
+  factory Data.fromJson(Map<String, dynamic> json) => Data(
+        token: json["token"],
+        id: json["id"],
+        email: json["email"],
+        nicename: json["nicename"],
+        firstName: json["firstName"],
+        lastName: json["lastName"],
+        displayName: json["displayName"],
+      );
 
-  WooJWTResponse.fromJson(Map<String, dynamic> json) {
-    token = json['token'];
-    userEmail = json['user_email'];
-    userNicename = json['user_nicename'];
-    userDisplayName = json['user_display_name'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['token'] = this.token;
-    data['user_email'] = this.userEmail;
-    data['user_nicename'] = this.userNicename;
-    data['user_display_name'] = this.userDisplayName;
-    return data;
-  }
-  @override toString() => this.toJson().toString();
+  Map<String, dynamic> toJson() => {
+        "token": token,
+        "id": id,
+        "email": email,
+        "nicename": nicename,
+        "firstName": firstName,
+        "lastName": lastName,
+        "displayName": displayName,
+      };
 }
