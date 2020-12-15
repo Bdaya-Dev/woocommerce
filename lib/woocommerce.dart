@@ -176,10 +176,7 @@ class WooCommerce {
     };
     final token = base64.encode(latin1.encode('$username:$password'));
     final response = await http.post(this.baseUrl + URL_JWT_TOKEN,
-        body: body,
-        headers: {
-          HttpHeaders.authorizationHeader: "Basic $token"
-        });
+        body: body, headers: {HttpHeaders.authorizationHeader: "Basic $token"});
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       WooJwtResponse authResponse =
@@ -204,7 +201,8 @@ class WooCommerce {
           await authenticateViaJWT(username: username, password: password);
       _printToLog('attempted token : ' + response.toString());
       if (response is String) {
-        int id = await fetchLoggedInUserId();
+        int id =
+            await fetchLoggedInUserId(username: username, password: password);
         customer = await getCustomerById(id: id);
       }
       return customer;
@@ -226,11 +224,13 @@ class WooCommerce {
   /// Fetches already authenticated user, using Jwt
   ///
   /// Associated endpoint : /wp-json/wp/v2/users/me
-  Future<int> fetchLoggedInUserId() async {
+  Future<int> fetchLoggedInUserId({username, password}) async {
     _authToken = await _localDbService.getSecurityToken();
     _urlHeader['Authorization'] = 'Bearer ' + _authToken;
-    final response =
-        await http.get(this.baseUrl + URL_USER_ME, headers: _urlHeader);
+
+    final token = base64.encode(latin1.encode('$username:$password'));
+    final response = await http.get(this.baseUrl + URL_USER_ME,
+        headers: {HttpHeaders.authorizationHeader: "Basic $token"});
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final jsonStr = json.decode(response.body);
