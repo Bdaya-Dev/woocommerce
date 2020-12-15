@@ -1709,7 +1709,8 @@ class WooCommerce {
     if (response['message'] == null) {
       return response;
     } else {
-      throw Exception(WooCommerceError.fromJson(response).toString());
+      return response['message'];
+      //throw Exception(WooCommerceError.fromJson(response).toString());
     }
   }
 
