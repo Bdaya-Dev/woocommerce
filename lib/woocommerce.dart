@@ -1037,12 +1037,15 @@ class WooCommerce {
   ///
   /// Related endpoint : wc/store/cart/items
 
-  Future<List<WooCartItem>> getMyCartItems() async {
+  Future<List<WooCartItem>> getMyCartItems(String username, String password) async {
+    
     await getAuthTokenFromDb();
     _urlHeader['Authorization'] = 'Bearer ' + _authToken;
+        final token = base64.encode(latin1.encode('$username:$password'));
+
     final response = await http.get(
         this.baseUrl + URL_STORE_API_PATH + 'cart/items',
-        headers: _urlHeader);
+        headers:  {HttpHeaders.authorizationHeader: "Basic $token"});
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final jsonStr = json.decode(response.body);
