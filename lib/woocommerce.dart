@@ -1006,6 +1006,8 @@ class WooCommerce {
   ///
 
   Future<WooCartItem> addToMyCart(
+    String username,
+    String password,
       {@required String itemId,
       @required String quantity,
       List<WooProductVariation> variations}) async {
@@ -1013,12 +1015,13 @@ class WooCommerce {
       'id': itemId,
       'quantity': quantity,
     };
+     final token = base64.encode(latin1.encode('$username:$password'));
     if (variations != null) data['variations'] = variations;
     await getAuthTokenFromDb();
     _urlHeader['Authorization'] = 'Bearer ' + _authToken;
     final response = await http.post(
         this.baseUrl + URL_STORE_API_PATH + 'cart/items',
-        headers: _urlHeader,
+        headers: {HttpHeaders.authorizationHeader: "Basic $token"},
         body: data);
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
