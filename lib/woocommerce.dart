@@ -190,6 +190,12 @@ class WooCommerce {
     }
   }
 
+  void updateWoocommerceAccessToken(String token) {
+    _authToken = token;
+    _localDbService.updateSecurityToken(_authToken);
+    _urlHeader['Authorization'] = 'Bearer $token';
+  }
+
   /// Authenticates the user via JWT and returns a WooCommerce customer object of the current logged in customer.
   loginCustomer({
     @required String username,
@@ -1005,9 +1011,7 @@ class WooCommerce {
   /// Related endpoint : wc/store/cart
   ///
 
-  Future<WooCartItem> addToMyCart(
-    String username,
-    String password,
+  Future<WooCartItem> addToMyCart(String username, String password,
       {@required String itemId,
       @required String quantity,
       List<WooProductVariation> variations}) async {
@@ -1015,7 +1019,7 @@ class WooCommerce {
       'id': itemId,
       'quantity': quantity,
     };
-     final token = base64.encode(latin1.encode('$username:$password'));
+    final token = base64.encode(latin1.encode('$username:$password'));
     if (variations != null) data['variations'] = variations;
     await getAuthTokenFromDb();
     _urlHeader['Authorization'] = 'Bearer ' + _authToken;
@@ -1040,15 +1044,15 @@ class WooCommerce {
   ///
   /// Related endpoint : wc/store/cart/items
 
-  Future<List<WooCartItem>> getMyCartItems(String username, String password) async {
-    
+  Future<List<WooCartItem>> getMyCartItems(
+      String username, String password) async {
     await getAuthTokenFromDb();
     _urlHeader['Authorization'] = 'Bearer ' + _authToken;
-        final token = base64.encode(latin1.encode('$username:$password'));
+    final token = base64.encode(latin1.encode('$username:$password'));
 
     final response = await http.get(
         this.baseUrl + URL_STORE_API_PATH + 'cart/items',
-        headers:  {HttpHeaders.authorizationHeader: "Basic $token"});
+        headers: {HttpHeaders.authorizationHeader: "Basic $token"});
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final jsonStr = json.decode(response.body);
