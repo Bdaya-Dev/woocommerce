@@ -92,8 +92,9 @@ class WooOrderPayload {
         couponLines.add(new WooOrderPayloadCouponLines.fromJson(v));
       });
     }
-    billing =
-        json['billing'] != null ? new WooOrderPayloadBilling.fromJson(json['billing']) : null;
+    billing = json['billing'] != null
+        ? new WooOrderPayloadBilling.fromJson(json['billing'])
+        : null;
     shipping = json['shipping'] != null
         ? new WooOrderPayloadShipping.fromJson(json['shipping'])
         : null;
@@ -145,7 +146,9 @@ class WooOrderPayload {
     }
     return data;
   }
-  @override toString() => this.toJson().toString();
+
+  @override
+  toString() => this.toJson().toString();
 }
 
 class WooOrderPayloadMetaData {
@@ -335,7 +338,7 @@ class LineItems {
   int productId;
   String name;
   int variationId;
-  String taxClass;
+  // String taxClass;
   String subtotal;
   String total;
   int quantity;
@@ -344,7 +347,7 @@ class LineItems {
       {this.productId,
       this.name,
       this.variationId,
-      this.taxClass,
+      //this.taxClass,
       this.subtotal,
       this.total,
       this.quantity});
@@ -353,7 +356,7 @@ class LineItems {
     productId = json['product_id'];
     name = json['name'];
     variationId = json['variation_id'];
-    taxClass = json['tax_class'];
+    // taxClass = json['tax_class'];
     subtotal = json['subtotal'];
     total = json['total'];
     quantity = json['quantity'];
@@ -362,27 +365,29 @@ class LineItems {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['product_id'] = this.productId;
-    if (this.name !=null){
+    if (this.name != null) {
       data['name'] = this.name;
     }
 
     if (this.variationId != null) {
       data['variation_id'] = this.variationId;
     }
-    if (this.taxClass != null) {
-      data['tax_class'] = this.taxClass;
-    }
-    if (this.subtotal != null){
+    // if (this.taxClass != null) {
+    //   data['tax_class'] = this.taxClass;
+    // }
+    if (this.subtotal != null) {
       data['subtotal'] = this.subtotal;
     }
-    if (this.total != null){
+    if (this.total != null) {
       data['total'] = this.total;
     }
 
     data['quantity'] = this.quantity;
     return data;
   }
-  @override toString() => this.toJson().toString();
+
+  @override
+  toString() => this.toJson().toString();
 }
 
 class ShippingLines {
