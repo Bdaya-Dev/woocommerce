@@ -397,9 +397,9 @@ class LineItemMetaDatum {
     factory LineItemMetaDatum.fromJson(Map<String, dynamic> json) => LineItemMetaDatum(
         id: json["id"],
         key: keyValues.map[json["key"]],
-        value: List<dynamic>.from(json["value"].map((x) => x)),
+        value: json['value'] is String ? [json['value']] : List<dynamic>.from(json["value"].map((x) => x)),
         displayKey: keyValues.map[json["display_key"]],
-        displayValue: List<dynamic>.from(json["display_value"].map((x) => x)),
+        displayValue: json["display_value"] is String? [json["display_value"]] : List<dynamic>.from(json["display_value"].map((x) => x)),
     );
 
     Map<String, dynamic> toJson() => {
