@@ -1,37 +1,3 @@
-/*
- * BSD 3-Clause License
-
-    Copyright (c) 2020, RAY OKAAH - MailTo: ray@flutterengineer.com, Twitter: Rayscode
-    All rights reserved.
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    1. Redistributions of source code must retain the above copyright notice, this
-    list of conditions and the following disclaimer.
-
-    2. Redistributions in binary form must reproduce the above copyright notice,
-    this list of conditions and the following disclaimer in the documentation
-    and/or other materials provided with the distribution.
-
-    3. Neither the name of the copyright holder nor the names of its
-    contributors may be used to endorse or promote products derived from
-    this software without specific prior written permission.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
- */
-
-import 'package:flutter/material.dart';
 // To parse this JSON data, do
 //
 //     final wooOrder = wooOrderFromJson(jsonString);
@@ -85,7 +51,6 @@ class WooOrder {
         this.feeLines,
         this.couponLines,
         this.refunds,
-        this.currencySymbol,
         this.links,
     });
 
@@ -93,10 +58,10 @@ class WooOrder {
     int parentId;
     String number;
     String orderKey;
-    CreatedVia createdVia;
-    Version version;
-    Status status;
-    Currency currency;
+    String createdVia;
+    String version;
+    String status;
+    String currency;
     DateTime dateCreated;
     DateTime dateCreatedGmt;
     DateTime dateModified;
@@ -123,14 +88,13 @@ class WooOrder {
     DateTime dateCompleted;
     DateTime dateCompletedGmt;
     String cartHash;
-    List<WooOrderMetaDatum> metaData;
+    List<MetaDatum> metaData;
     List<LineItem> lineItems;
-    List<dynamic> taxLines;
-    List<dynamic> shippingLines;
+    List<TaxLine> taxLines;
+    List<ShippingLine> shippingLines;
     List<dynamic> feeLines;
     List<dynamic> couponLines;
-    List<dynamic> refunds;
-    CurrencySymbol currencySymbol;
+    List<Refund> refunds;
     Links links;
 
     factory WooOrder.fromJson(Map<String, dynamic> json) => WooOrder(
@@ -138,10 +102,10 @@ class WooOrder {
         parentId: json["parent_id"],
         number: json["number"],
         orderKey: json["order_key"],
-        createdVia: createdViaValues.map[json["created_via"]],
-        version: versionValues.map[json["version"]],
-        status: statusValues.map[json["status"]],
-        currency: currencyValues.map[json["currency"]],
+        createdVia: json["created_via"],
+        version: json["version"],
+        status: json["status"],
+        currency: json["currency"],
         dateCreated: DateTime.parse(json["date_created"]),
         dateCreatedGmt: DateTime.parse(json["date_created_gmt"]),
         dateModified: DateTime.parse(json["date_modified"]),
@@ -168,14 +132,13 @@ class WooOrder {
         dateCompleted: json["date_completed"] == null ? null : DateTime.parse(json["date_completed"]),
         dateCompletedGmt: json["date_completed_gmt"] == null ? null : DateTime.parse(json["date_completed_gmt"]),
         cartHash: json["cart_hash"],
-        metaData: List<WooOrderMetaDatum>.from(json["meta_data"].map((x) => WooOrderMetaDatum.fromJson(x))),
+        metaData: List<MetaDatum>.from(json["meta_data"].map((x) => MetaDatum.fromJson(x))),
         lineItems: List<LineItem>.from(json["line_items"].map((x) => LineItem.fromJson(x))),
-        taxLines: List<dynamic>.from(json["tax_lines"].map((x) => x)),
-        shippingLines: List<dynamic>.from(json["shipping_lines"].map((x) => x)),
+        taxLines: List<TaxLine>.from(json["tax_lines"].map((x) => TaxLine.fromJson(x))),
+        shippingLines: List<ShippingLine>.from(json["shipping_lines"].map((x) => ShippingLine.fromJson(x))),
         feeLines: List<dynamic>.from(json["fee_lines"].map((x) => x)),
         couponLines: List<dynamic>.from(json["coupon_lines"].map((x) => x)),
-        refunds: List<dynamic>.from(json["refunds"].map((x) => x)),
-        currencySymbol: currencySymbolValues.map[json["currency_symbol"]],
+        refunds: List<Refund>.from(json["refunds"].map((x) => Refund.fromJson(x))),
         links: Links.fromJson(json["_links"]),
     );
 
@@ -184,10 +147,10 @@ class WooOrder {
         "parent_id": parentId,
         "number": number,
         "order_key": orderKey,
-        "created_via": createdViaValues.reverse[createdVia],
-        "version": versionValues.reverse[version],
-        "status": statusValues.reverse[status],
-        "currency": currencyValues.reverse[currency],
+        "created_via": createdVia,
+        "version": version,
+        "status": status,
+        "currency": currency,
         "date_created": dateCreated.toIso8601String(),
         "date_created_gmt": dateCreatedGmt.toIso8601String(),
         "date_modified": dateModified.toIso8601String(),
@@ -216,12 +179,11 @@ class WooOrder {
         "cart_hash": cartHash,
         "meta_data": List<dynamic>.from(metaData.map((x) => x.toJson())),
         "line_items": List<dynamic>.from(lineItems.map((x) => x.toJson())),
-        "tax_lines": List<dynamic>.from(taxLines.map((x) => x)),
-        "shipping_lines": List<dynamic>.from(shippingLines.map((x) => x)),
+        "tax_lines": List<dynamic>.from(taxLines.map((x) => x.toJson())),
+        "shipping_lines": List<dynamic>.from(shippingLines.map((x) => x.toJson())),
         "fee_lines": List<dynamic>.from(feeLines.map((x) => x)),
         "coupon_lines": List<dynamic>.from(couponLines.map((x) => x)),
-        "refunds": List<dynamic>.from(refunds.map((x) => x)),
-        "currency_symbol": currencySymbolValues.reverse[currencySymbol],
+        "refunds": List<dynamic>.from(refunds.map((x) => x.toJson())),
         "_links": links.toJson(),
     };
 }
@@ -249,7 +211,7 @@ class Ing {
     String city;
     String state;
     String postcode;
-    Country country;
+    String country;
     String email;
     String phone;
 
@@ -262,7 +224,7 @@ class Ing {
         city: json["city"],
         state: json["state"],
         postcode: json["postcode"],
-        country: countryValues.map[json["country"]],
+        country: json["country"],
         email: json["email"] == null ? null : json["email"],
         phone: json["phone"] == null ? null : json["phone"],
     );
@@ -276,36 +238,11 @@ class Ing {
         "city": city,
         "state": state,
         "postcode": postcode,
-        "country": countryValues.reverse[country],
+        "country": country,
         "email": email == null ? null : email,
         "phone": phone == null ? null : phone,
     };
 }
-
-enum Country { SA, EMPTY }
-
-final countryValues = EnumValues({
-    "": Country.EMPTY,
-    "SA": Country.SA
-});
-
-enum CreatedVia { CHECKOUT }
-
-final createdViaValues = EnumValues({
-    "checkout": CreatedVia.CHECKOUT
-});
-
-enum Currency { SAR }
-
-final currencyValues = EnumValues({
-    "SAR": Currency.SAR
-});
-
-enum CurrencySymbol { EMPTY }
-
-final currencySymbolValues = EnumValues({
-    "ر.س": CurrencySymbol.EMPTY
-});
 
 class LineItem {
     LineItem({
@@ -323,7 +260,6 @@ class LineItem {
         this.metaData,
         this.sku,
         this.price,
-        this.parentName,
     });
 
     int id;
@@ -336,11 +272,10 @@ class LineItem {
     String subtotalTax;
     String total;
     String totalTax;
-    List<dynamic> taxes;
-    List<LineItemMetaDatum> metaData;
+    List<Tax> taxes;
+    List<MetaDatum> metaData;
     String sku;
-    double price;
-    dynamic parentName;
+    int price;
 
     factory LineItem.fromJson(Map<String, dynamic> json) => LineItem(
         id: json["id"],
@@ -353,11 +288,10 @@ class LineItem {
         subtotalTax: json["subtotal_tax"],
         total: json["total"],
         totalTax: json["total_tax"],
-        taxes: List<dynamic>.from(json["taxes"].map((x) => x)),
-        metaData: List<LineItemMetaDatum>.from(json["meta_data"].map((x) => LineItemMetaDatum.fromJson(x))),
+        taxes: List<Tax>.from(json["taxes"].map((x) => Tax.fromJson(x))),
+        metaData: List<MetaDatum>.from(json["meta_data"].map((x) => MetaDatum.fromJson(x))),
         sku: json["sku"],
-        price: json["price"].toDouble(),
-        parentName: json["parent_name"],
+        price: json["price"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -371,52 +305,60 @@ class LineItem {
         "subtotal_tax": subtotalTax,
         "total": total,
         "total_tax": totalTax,
-        "taxes": List<dynamic>.from(taxes.map((x) => x)),
+        "taxes": List<dynamic>.from(taxes.map((x) => x.toJson())),
         "meta_data": List<dynamic>.from(metaData.map((x) => x.toJson())),
         "sku": sku,
         "price": price,
-        "parent_name": parentName,
     };
 }
 
-class LineItemMetaDatum {
-    LineItemMetaDatum({
+class MetaDatum {
+    MetaDatum({
         this.id,
         this.key,
         this.value,
-        this.displayKey,
-        this.displayValue,
     });
 
     int id;
-    Key key;
-    List<dynamic> value;
-    Key displayKey;
-    List<dynamic> displayValue;
+    String key;
+    String value;
 
-    factory LineItemMetaDatum.fromJson(Map<String, dynamic> json) => LineItemMetaDatum(
+    factory MetaDatum.fromJson(Map<String, dynamic> json) => MetaDatum(
         id: json["id"],
-        key: keyValues.map[json["key"]],
-        value: List<dynamic>.from(json["value"].map((x) => x)),
-        displayKey: keyValues.map[json["display_key"]],
-        displayValue: List<dynamic>.from(json["display_value"].map((x) => x)),
+        key: json["key"],
+        value: json["value"],
     );
 
     Map<String, dynamic> toJson() => {
         "id": id,
-        "key": keyValues.reverse[key],
-        "value": List<dynamic>.from(value.map((x) => x)),
-        "display_key": keyValues.reverse[displayKey],
-        "display_value": List<dynamic>.from(displayValue.map((x) => x)),
+        "key": key,
+        "value": value,
     };
 }
 
-enum Key { ALG_WC_PIF_GLOBAL, ALG_WC_PIF_LOCAL }
+class Tax {
+    Tax({
+        this.id,
+        this.total,
+        this.subtotal,
+    });
 
-final keyValues = EnumValues({
-    "_alg_wc_pif_global": Key.ALG_WC_PIF_GLOBAL,
-    "_alg_wc_pif_local": Key.ALG_WC_PIF_LOCAL
-});
+    int id;
+    String total;
+    String subtotal;
+
+    factory Tax.fromJson(Map<String, dynamic> json) => Tax(
+        id: json["id"],
+        total: json["total"],
+        subtotal: json["subtotal"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "id": id,
+        "total": total,
+        "subtotal": subtotal,
+    };
+}
 
 class Links {
     Links({
@@ -458,273 +400,110 @@ class Collection {
     };
 }
 
-class WooOrderMetaDatum {
-    WooOrderMetaDatum({
+class Refund {
+    Refund({
         this.id,
-        this.key,
-        this.value,
+        this.refund,
+        this.total,
     });
 
     int id;
-    String key;
-    dynamic value;
+    String refund;
+    String total;
 
-    factory WooOrderMetaDatum.fromJson(Map<String, dynamic> json) => WooOrderMetaDatum(
+    factory Refund.fromJson(Map<String, dynamic> json) => Refund(
         id: json["id"],
-        key: json["key"],
-        value: json["value"],
+        refund: json["refund"],
+        total: json["total"],
     );
 
     Map<String, dynamic> toJson() => {
         "id": id,
-        "key": key,
-        "value": value,
+        "refund": refund,
+        "total": total,
     };
 }
 
-class ValueClass {
-    ValueClass({
-        this.zoneId,
-        this.name,
-        this.countries,
-        this.currency,
-        this.exchangeRate,
-        this.autoExchangeRate,
-        this.disableTaxAdjustment,
-        this.iban,
-        this.enabled,
-        this.attachToEmailIds,
-        this.displayShippingAddress,
-        this.displayEmail,
-        this.displayPhone,
-        this.displayCustomerNotes,
-        this.displayDate,
-        this.displayNumber,
-        this.numberFormat,
-        this.myAccountButtons,
-        this.paperSize,
-        this.fontSubsetting,
-        this.headerLogo,
-        this.headerLogoHeight,
-        this.shopName,
-        this.shopAddress,
-        this.footer,
-        this.extra1,
-        this.extra2,
-        this.extra3,
-        this.number,
-        this.formattedNumber,
-        this.prefix,
-        this.suffix,
-        this.documentType,
-        this.orderId,
-        this.padding,
+class ShippingLine {
+    ShippingLine({
+        this.id,
+        this.methodTitle,
+        this.methodId,
+        this.total,
+        this.totalTax,
+        this.taxes,
+        this.metaData,
     });
 
-    ZoneId zoneId;
-    Name name;
-    List<Country> countries;
-    Currency currency;
-    String exchangeRate;
-    AutoExchangeRate autoExchangeRate;
-    AutoExchangeRate disableTaxAdjustment;
-    String iban;
-    String enabled;
-    AttachToEmailIds attachToEmailIds;
-    String displayShippingAddress;
-    String displayEmail;
-    String displayPhone;
-    String displayCustomerNotes;
-    String displayDate;
-    String displayNumber;
-    NumberFormat numberFormat;
-    String myAccountButtons;
-    String paperSize;
-    bool fontSubsetting;
-    String headerLogo;
-    String headerLogoHeight;
-    String shopName;
-    String shopAddress;
-    String footer;
-    String extra1;
-    String extra2;
-    String extra3;
-    String number;
-    String formattedNumber;
-    String prefix;
-    String suffix;
-    String documentType;
-    int orderId;
-    String padding;
+    int id;
+    String methodTitle;
+    String methodId;
+    String total;
+    String totalTax;
+    List<dynamic> taxes;
+    List<MetaDatum> metaData;
 
-    factory ValueClass.fromJson(Map<String, dynamic> json) => ValueClass(
-        zoneId: json["zone_id"] == null ? null : zoneIdValues.map[json["zone_id"]],
-        name: json["name"] == null ? null : nameValues.map[json["name"]],
-        countries: json["countries"] == null ? null : List<Country>.from(json["countries"].map((x) => countryValues.map[x])),
-        currency: json["currency"] == null ? null : currencyValues.map[json["currency"]],
-        exchangeRate: json["exchange_rate"] == null ? null : json["exchange_rate"],
-        autoExchangeRate: json["auto_exchange_rate"] == null ? null : autoExchangeRateValues.map[json["auto_exchange_rate"]],
-        disableTaxAdjustment: json["disable_tax_adjustment"] == null ? null : autoExchangeRateValues.map[json["disable_tax_adjustment"]],
-        iban: json["IBAN"] == null ? null : json["IBAN"],
-        enabled: json["enabled"] == null ? null : json["enabled"],
-        attachToEmailIds: json["attach_to_email_ids"] == null ? null : AttachToEmailIds.fromJson(json["attach_to_email_ids"]),
-        displayShippingAddress: json["display_shipping_address"] == null ? null : json["display_shipping_address"],
-        displayEmail: json["display_email"] == null ? null : json["display_email"],
-        displayPhone: json["display_phone"] == null ? null : json["display_phone"],
-        displayCustomerNotes: json["display_customer_notes"] == null ? null : json["display_customer_notes"],
-        displayDate: json["display_date"] == null ? null : json["display_date"],
-        displayNumber: json["display_number"] == null ? null : json["display_number"],
-        numberFormat: json["number_format"] == null ? null : NumberFormat.fromJson(json["number_format"]),
-        myAccountButtons: json["my_account_buttons"] == null ? null : json["my_account_buttons"],
-        paperSize: json["paper_size"] == null ? null : json["paper_size"],
-        fontSubsetting: json["font_subsetting"] == null ? null : json["font_subsetting"],
-        headerLogo: json["header_logo"] == null ? null : json["header_logo"],
-        headerLogoHeight: json["header_logo_height"] == null ? null : json["header_logo_height"],
-        shopName: json["shop_name"] == null ? null : json["shop_name"],
-        shopAddress: json["shop_address"] == null ? null : json["shop_address"],
-        footer: json["footer"] == null ? null : json["footer"],
-        extra1: json["extra_1"] == null ? null : json["extra_1"],
-        extra2: json["extra_2"] == null ? null : json["extra_2"],
-        extra3: json["extra_3"] == null ? null : json["extra_3"],
-        number: json["number"] == null ? null : json["number"],
-        formattedNumber: json["formatted_number"] == null ? null : json["formatted_number"],
-        prefix: json["prefix"] == null ? null : json["prefix"],
-        suffix: json["suffix"] == null ? null : json["suffix"],
-        documentType: json["document_type"] == null ? null : json["document_type"],
-        orderId: json["order_id"] == null ? null : json["order_id"],
-        padding: json["padding"] == null ? null : json["padding"],
+    factory ShippingLine.fromJson(Map<String, dynamic> json) => ShippingLine(
+        id: json["id"],
+        methodTitle: json["method_title"],
+        methodId: json["method_id"],
+        total: json["total"],
+        totalTax: json["total_tax"],
+        taxes: List<dynamic>.from(json["taxes"].map((x) => x)),
+        metaData: List<MetaDatum>.from(json["meta_data"].map((x) => MetaDatum.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
-        "zone_id": zoneId == null ? null : zoneIdValues.reverse[zoneId],
-        "name": name == null ? null : nameValues.reverse[name],
-        "countries": countries == null ? null : List<dynamic>.from(countries.map((x) => countryValues.reverse[x])),
-        "currency": currency == null ? null : currencyValues.reverse[currency],
-        "exchange_rate": exchangeRate == null ? null : exchangeRate,
-        "auto_exchange_rate": autoExchangeRate == null ? null : autoExchangeRateValues.reverse[autoExchangeRate],
-        "disable_tax_adjustment": disableTaxAdjustment == null ? null : autoExchangeRateValues.reverse[disableTaxAdjustment],
-        "IBAN": iban == null ? null : iban,
-        "enabled": enabled == null ? null : enabled,
-        "attach_to_email_ids": attachToEmailIds == null ? null : attachToEmailIds.toJson(),
-        "display_shipping_address": displayShippingAddress == null ? null : displayShippingAddress,
-        "display_email": displayEmail == null ? null : displayEmail,
-        "display_phone": displayPhone == null ? null : displayPhone,
-        "display_customer_notes": displayCustomerNotes == null ? null : displayCustomerNotes,
-        "display_date": displayDate == null ? null : displayDate,
-        "display_number": displayNumber == null ? null : displayNumber,
-        "number_format": numberFormat == null ? null : numberFormat.toJson(),
-        "my_account_buttons": myAccountButtons == null ? null : myAccountButtons,
-        "paper_size": paperSize == null ? null : paperSize,
-        "font_subsetting": fontSubsetting == null ? null : fontSubsetting,
-        "header_logo": headerLogo == null ? null : headerLogo,
-        "header_logo_height": headerLogoHeight == null ? null : headerLogoHeight,
-        "shop_name": shopName == null ? null : shopName,
-        "shop_address": shopAddress == null ? null : shopAddress,
-        "footer": footer == null ? null : footer,
-        "extra_1": extra1 == null ? null : extra1,
-        "extra_2": extra2 == null ? null : extra2,
-        "extra_3": extra3 == null ? null : extra3,
-        "number": number == null ? null : number,
-        "formatted_number": formattedNumber == null ? null : formattedNumber,
-        "prefix": prefix == null ? null : prefix,
-        "suffix": suffix == null ? null : suffix,
-        "document_type": documentType == null ? null : documentType,
-        "order_id": orderId == null ? null : orderId,
-        "padding": padding == null ? null : padding,
+        "id": id,
+        "method_title": methodTitle,
+        "method_id": methodId,
+        "total": total,
+        "total_tax": totalTax,
+        "taxes": List<dynamic>.from(taxes.map((x) => x)),
+        "meta_data": List<dynamic>.from(metaData.map((x) => x.toJson())),
     };
 }
 
-class AttachToEmailIds {
-    AttachToEmailIds({
-        this.newOrder,
-        this.customerCompletedOrder,
-        this.customerInvoice,
+class TaxLine {
+    TaxLine({
+        this.id,
+        this.rateCode,
+        this.rateId,
+        this.label,
+        this.compound,
+        this.taxTotal,
+        this.shippingTaxTotal,
+        this.metaData,
     });
 
-    String newOrder;
-    String customerCompletedOrder;
-    String customerInvoice;
+    int id;
+    String rateCode;
+    int rateId;
+    String label;
+    bool compound;
+    String taxTotal;
+    String shippingTaxTotal;
+    List<dynamic> metaData;
 
-    factory AttachToEmailIds.fromJson(Map<String, dynamic> json) => AttachToEmailIds(
-        newOrder: json["new_order"],
-        customerCompletedOrder: json["customer_completed_order"],
-        customerInvoice: json["customer_invoice"],
+    factory TaxLine.fromJson(Map<String, dynamic> json) => TaxLine(
+        id: json["id"],
+        rateCode: json["rate_code"],
+        rateId: json["rate_id"],
+        label: json["label"],
+        compound: json["compound"],
+        taxTotal: json["tax_total"],
+        shippingTaxTotal: json["shipping_tax_total"],
+        metaData: List<dynamic>.from(json["meta_data"].map((x) => x)),
     );
 
     Map<String, dynamic> toJson() => {
-        "new_order": newOrder,
-        "customer_completed_order": customerCompletedOrder,
-        "customer_invoice": customerInvoice,
+        "id": id,
+        "rate_code": rateCode,
+        "rate_id": rateId,
+        "label": label,
+        "compound": compound,
+        "tax_total": taxTotal,
+        "shipping_tax_total": shippingTaxTotal,
+        "meta_data": List<dynamic>.from(metaData.map((x) => x)),
     };
-}
-
-enum AutoExchangeRate { NO }
-
-final autoExchangeRateValues = EnumValues({
-    "no": AutoExchangeRate.NO
-});
-
-enum Name { EMPTY }
-
-final nameValues = EnumValues({
-    "السعودية": Name.EMPTY
-});
-
-class NumberFormat {
-    NumberFormat({
-        this.prefix,
-        this.suffix,
-        this.padding,
-    });
-
-    String prefix;
-    String suffix;
-    String padding;
-
-    factory NumberFormat.fromJson(Map<String, dynamic> json) => NumberFormat(
-        prefix: json["prefix"],
-        suffix: json["suffix"],
-        padding: json["padding"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "prefix": prefix,
-        "suffix": suffix,
-        "padding": padding,
-    };
-}
-
-enum ZoneId { D8_A7_D984_D8_B3_D8_B9_D988_D8_AFD98_AD8_A9 }
-
-final zoneIdValues = EnumValues({
-    "d8a7d984d8b3d8b9d988d8afd98ad8a9": ZoneId.D8_A7_D984_D8_B3_D8_B9_D988_D8_AFD98_AD8_A9
-});
-
-enum Status { PENDING, CANCELLED, COMPLETED }
-
-final statusValues = EnumValues({
-    "cancelled": Status.CANCELLED,
-    "completed": Status.COMPLETED,
-    "pending": Status.PENDING
-});
-
-enum Version { THE_480, THE_452 }
-
-final versionValues = EnumValues({
-    "4.5.2": Version.THE_452,
-    "4.8.0": Version.THE_480
-});
-
-class EnumValues<T> {
-    Map<String, T> map;
-    Map<T, String> reverseMap;
-
-    EnumValues(this.map);
-
-    Map<T, String> get reverse {
-        if (reverseMap == null) {
-            reverseMap = map.map((k, v) => new MapEntry(v, k));
-        }
-        return reverseMap;
-    }
 }
